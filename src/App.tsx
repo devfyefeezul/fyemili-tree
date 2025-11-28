@@ -77,11 +77,10 @@ function App() {
             <div className="mb-4 flex justify-end gap-2">
               <button
                 onClick={() => setShowInactive(!showInactive)}
-                className={`px-4 py-2 rounded shadow transition flex items-center gap-2 ${
-                  showInactive 
-                    ? 'bg-orange-600 text-white hover:bg-orange-700' 
-                    : 'bg-white text-gray-700 hover:bg-gray-50'
-                }`}
+                className={`px-4 py-2 rounded shadow transition flex items-center gap-2 ${showInactive
+                  ? 'bg-orange-600 text-white hover:bg-orange-700'
+                  : 'bg-white text-gray-700 hover:bg-gray-50'
+                  }`}
                 title={showInactive ? 'Show active records' : 'Show inactive records'}
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -143,15 +142,37 @@ function App() {
                           <option value="">Select parent...</option>
                           {people
                             .filter(p => p.spouseId)
+                            .reduce<Person[]>((acc, person) => {
+                              // Skip if we've already added this couple
+                              const alreadyAdded = acc.some(p =>
+                                p.id === person.id || p.id === person.spouseId
+                              );
+                              if (!alreadyAdded) {
+                                const spouse = people.find(s => s.id === person.spouseId);
+                                // Add the male partner first (husband), female second (wife)
+                                if (person.gender === 'male') {
+                                  acc.push(person);
+                                } else if (spouse && spouse.gender === 'male') {
+                                  acc.push(spouse);
+                                } else {
+                                  // If neither is male or gender not specified, use current person
+                                  acc.push(person);
+                                }
+                              }
+                              return acc;
+                            }, [])
                             .sort((a, b) => a.fullName.localeCompare(b.fullName))
-                            .map(p => (
-                              <option key={p.id} value={p.id}>
-                                {p.fullName} & {people.find(s => s.id === p.spouseId)?.fullName}
-                              </option>
-                            ))}
+                            .map(p => {
+                              const spouse = people.find(s => s.id === p.spouseId);
+                              return (
+                                <option key={p.id} value={p.id}>
+                                  {p.fullName} & {spouse?.fullName}
+                                </option>
+                              );
+                            })}
                         </select>
                       </div>
-                      
+
                       {/* Row 3: Layer Dropdown */}
                       <div className="flex flex-col gap-1">
                         <label className="text-sm font-medium">Layers:</label>
@@ -168,11 +189,11 @@ function App() {
                     </>
                   )}
                 </div>
-                
+
                 {/* Row 4: Tree View - Full Width with proper scrolling */}
-                <TreeView 
-                  people={people} 
-                  onUpdate={handleUpdatePerson} 
+                <TreeView
+                  people={people}
+                  onUpdate={handleUpdatePerson}
                   onToggleStatus={handleToggleStatus}
                   viewMode={treeMode}
                   selectedFamilyId={selectedFamily}
