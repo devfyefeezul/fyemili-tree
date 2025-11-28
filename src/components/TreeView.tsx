@@ -187,31 +187,37 @@ const FamilyUnit = ({ node, onSelect }: FamilyUnitProps) => {
           <div className="flex flex-col items-center relative">
             {/* Children nodes */}
             <div className="flex">
-              {node.children.map((child, index) => (
-                <div key={child.id} className="flex flex-col items-center relative px-4 pt-8">
-                  {/* Horizontal Connector Lines */}
-                  {index > 0 && (
-                    <div className="absolute top-0 left-0 w-1/2 h-0.5 bg-gray-300"></div>
-                  )}
-                  {index < node.children.length - 1 && (
-                    <div className="absolute top-0 right-0 w-1/2 h-0.5 bg-gray-300"></div>
-                  )}
+              {node.children.map((child, index) => {
+                // Calculate offset for vertical line to point to biological child's card
+                const childVerticalOffset = child.spouse ? -(cardWidth + spouseGap) / 2 : 0;
+                
+                return (
+                  <div key={child.id} className="flex flex-col items-center relative px-4 pt-8">
+                    {/* Horizontal connectors - only between siblings, at container center */}
+                    {index > 0 && (
+                      <div className="absolute top-0 left-0 w-1/2 h-0.5 bg-gray-300"></div>
+                    )}
+                    {index < node.children.length - 1 && (
+                      <div className="absolute top-0 right-0 w-1/2 h-0.5 bg-gray-300"></div>
+                    )}
 
-                  {/* Vertical line to child */}
-                  <div 
-                    className="bg-gray-300 absolute"
-                    style={{
-                      width: '2px',
-                      height: '32px',
-                      top: 0,
-                      left: '50%',
-                      transform: 'translateX(-50%)'
-                    }}
-                  ></div>
-                  
-                  <FamilyUnit node={child} onSelect={onSelect} />
-                </div>
-              ))}
+                    {/* Vertical line to child - offset to point to biological child */}
+                    <div 
+                      className="bg-gray-300 absolute"
+                      style={{
+                        width: '2px',
+                        height: '32px',
+                        top: 0,
+                        left: '50%',
+                        marginLeft: `${childVerticalOffset}px`,
+                        transform: 'translateX(-50%)'
+                      }}
+                    ></div>
+                    
+                    <FamilyUnit node={child} onSelect={onSelect} />
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>

@@ -16,7 +16,7 @@ export const mockPeople: Person[] = [
   {
     "id": '2',
     "parentId": null,
-    "spouseId": null,
+    "spouseId": '1',
     "fullName": "Jamilah binti Sulaiman",
     "nickName": "Jamilah",
     "gender": "female",
@@ -88,7 +88,7 @@ export const mockPeople: Person[] = [
   {
     "id": '8',
     "parentId": null,
-    "spouseId": null,
+    "spouseId": '3',
     "fullName": "Ili Athirah",
     "nickName": "Ili",
     "gender": "female",
@@ -100,7 +100,7 @@ export const mockPeople: Person[] = [
   {
     "id": '9',
     "parentId": null,
-    "spouseId": null,
+    "spouseId": '4',
     "fullName": "Nurul Azani binti Azman",
     "nickName": "Zani",
     "gender": "female",
@@ -112,7 +112,7 @@ export const mockPeople: Person[] = [
   {
     "id": '10',
     "parentId": null,
-    "spouseId": null,
+    "spouseId": '5',
     "fullName": "Nurul Aina",
     "nickName": "Aina",
     "gender": "female",
@@ -124,7 +124,7 @@ export const mockPeople: Person[] = [
   {
     "id": '11',
     "parentId": null,
-    "spouseId": null,
+    "spouseId": '6',
     "fullName": "Muhammad Hariz Azizi",
     "nickName": "GG",
     "gender": "male",

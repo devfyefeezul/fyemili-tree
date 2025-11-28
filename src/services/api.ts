@@ -17,19 +17,45 @@ export const fetchPeople = async (showInactive = false): Promise<Person[]> => {
     return new Promise((resolve) => setTimeout(() => resolve(filtered), 500));
   }
 
+  console.log('Fetching data from Google Sheets API:', API_URL);
+  
   try {
     const response = await fetch(API_URL);
+    console.log('Response status:', response.status, response.statusText);
+    
     if (!response.ok) {
-      throw new Error('Network response was not ok');
+      const errorText = await response.text();
+      console.error('API Error Response:', errorText);
+      throw new Error(`Network response was not ok: ${response.status} ${response.statusText}`);
     }
+    
     const data = await response.json();
+    console.log('Received data from Google Sheets:', data);
+    console.log('Data type:', Array.isArray(data) ? 'Array' : typeof data);
+    console.log('Number of records:', Array.isArray(data) ? data.length : 'N/A');
+    
+    if (!Array.isArray(data)) {
+      console.error('Expected array but got:', typeof data);
+      console.log('Falling back to mock data');
+      return showInactive 
+        ? mockPeople.filter(p => p.status === 'inactive')
+        : mockPeople.filter(p => p.status !== 'inactive');
+    }
+    
     // Show ONLY inactive if showInactive is true, otherwise show ONLY active
-    return showInactive 
+    const filtered = showInactive 
       ? data.filter((p: Person) => p.status === 'inactive')
       : data.filter((p: Person) => p.status !== 'inactive');
+    
+    console.log('Filtered records:', filtered.length);
+    return filtered;
   } catch (error) {
     console.error('Error fetching people:', error);
-    return mockPeople; // Fallback to mock data on error
+    console.error('Error details:', error instanceof Error ? error.message : String(error));
+    console.log('Falling back to mock data');
+    return showInactive 
+      ? mockPeople.filter(p => p.status === 'inactive')
+      : mockPeople.filter(p => p.status !== 'inactive');
   }
 };
 
