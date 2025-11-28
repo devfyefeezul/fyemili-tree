@@ -1,0 +1,24 @@
+id,parentId,spouseId,fullName,nickName,gender,birthDate,bio,photoUrl,status
+1,,,Ahmad bin Sarimon,Pak Ahmad,male,1940-03-15,Patriarch of the family retired government officer.,https://via.placeholder.com/150,active
+2,,1,Jamilah binti Sulaiman,Mak Jamilah,female,1942-07-22,Matriarch of the family homemaker and community leader.,https://via.placeholder.com/150,active
+3,1,4,Hassan bin Ahmad,Abang Hassan,male,1965-05-10,Eldest son successful entrepreneur.,https://via.placeholder.com/150,active
+4,,3,Siti Aminah binti Rahman,Kak Aminah,female,1967-11-18,Teacher and devoted mother.,https://via.placeholder.com/150,active
+5,1,6,Ibrahim bin Ahmad,Pak Ibrahim,male,1968-09-25,Second son doctor at local hospital.,https://via.placeholder.com/150,active
+6,,5,Noraini binti Abdullah,Kak Noraini,female,1970-02-14,Nurse and health advocate.,https://via.placeholder.com/150,active
+7,1,,Zainab binti Ahmad,Kak Zainab,female,1972-06-08,Youngest daughter university lecturer.,https://via.placeholder.com/150,active
+8,3,9,Azman bin Hassan,Man,male,1990-03-12,Software engineer.,https://via.placeholder.com/150,active
+9,,8,Nurul Huda binti Ismail,Huda,female,1992-08-20,Graphic designer.,https://via.placeholder.com/150,active
+10,3,11,Farah binti Hassan,Farah,female,1993-11-05,Accountant.,https://via.placeholder.com/150,active
+11,,10,Rizal bin Mahmud,Rizal,male,1991-04-17,Civil engineer.,https://via.placeholder.com/150,active
+12,5,13,Hafiz bin Ibrahim,Hafiz,male,1995-07-22,Medical resident.,https://via.placeholder.com/150,active
+13,,12,Aisyah binti Karim,Aisyah,female,1996-12-10,Pharmacist.,https://via.placeholder.com/150,active
+14,5,,Amira binti Ibrahim,Amira,female,1998-05-16,Law student.,https://via.placeholder.com/150,active
+15,5,,Danial bin Ibrahim,Dan,male,2000-09-30,Engineering student.,https://via.placeholder.com/150,active
+16,8,,Irfan bin Azman,Irfan,male,2015-02-14,Primary school student.,https://via.placeholder.com/150,active
+17,8,,Sofia binti Azman,Sofia,female,2017-06-20,Kindergarten student.,https://via.placeholder.com/150,active
+18,10,,Aishah binti Rizal,Aishah,female,2016-04-08,Primary school student.,https://via.placeholder.com/150,active
+19,10,,Luqman bin Rizal,Luqman,male,2018-11-25,Kindergarten student.,https://via.placeholder.com/150,active
+20,10,,Zara binti Rizal,Zara,female,2020-03-12,Preschooler.,https://via.placeholder.com/150,active
+21,12,,Adam bin Hafiz,Adam,male,2019-07-19,Toddler.,https://via.placeholder.com/150,active
+22,12,,Maryam binti Hafiz,Maryam,female,2021-10-05,Toddler.,https://via.placeholder.com/150,active
+23,16,,Aqil bin Irfan,Aqil,male,2023-01-20,Infant.,https://via.placeholder.com/150,active
