@@ -7,59 +7,83 @@ const USE_MOCK_DATA = import.meta.env.VITE_USE_MOCK_DATA === 'true';
 
 export const fetchPeople = async (showInactive = false): Promise<Person[]> => {
   if (USE_MOCK_DATA || !API_URL) {
-    console.warn(USE_MOCK_DATA 
-      ? 'Using mock data (VITE_USE_MOCK_DATA=true)' 
+    console.warn(USE_MOCK_DATA
+      ? 'Using mock data (VITE_USE_MOCK_DATA=true)'
       : 'No API URL provided, using mock data.');
     // Show ONLY inactive if showInactive is true, otherwise show ONLY active
-    const filtered = showInactive 
+    const filtered = showInactive
       ? mockPeople.filter(p => p.status === 'inactive')
       : mockPeople.filter(p => p.status !== 'inactive');
     return new Promise((resolve) => setTimeout(() => resolve(filtered), 500));
   }
 
   console.log('Fetching data from Google Sheets API:', API_URL);
-  
+
   try {
     const response = await fetch(API_URL);
     console.log('Response status:', response.status, response.statusText);
-    
+
     if (!response.ok) {
       const errorText = await response.text();
       console.error('API Error Response:', errorText);
       throw new Error(`Network response was not ok: ${response.status} ${response.statusText}`);
     }
-    
+
     const data = await response.json();
     console.log('Received data from Google Sheets:', data);
     console.log('Data type:', Array.isArray(data) ? 'Array' : typeof data);
     console.log('Number of records:', Array.isArray(data) ? data.length : 'N/A');
-    
+
     if (!Array.isArray(data)) {
       console.error('Expected array but got:', typeof data);
       console.log('Falling back to mock data');
-      return showInactive 
+      return showInactive
         ? mockPeople.filter(p => p.status === 'inactive')
         : mockPeople.filter(p => p.status !== 'inactive');
     }
-    
+
     // Show ONLY inactive if showInactive is true, otherwise show ONLY active
-    const filtered = (showInactive 
+    const filtered = (showInactive
       ? data.filter((p: Person) => p.status === 'inactive')
       : data.filter((p: Person) => p.status !== 'inactive'))
-      .map((p: Person) => ({
-        ...p,
-        id: String(p.id),
-        parentId: p.parentId ? String(p.parentId) : null,
-        spouseId: p.spouseId ? String(p.spouseId) : null,
-      }));
-    
+      .map((p: Person) => {
+        // Parse history if it's a string (from Google Sheets)
+        let history = (p as any).history;
+        if (typeof history === 'string' && history.trim() !== '') {
+          try {
+            history = JSON.parse(history);
+          } catch (e) {
+            // Try to fix common issues (single quotes, unquoted keys)
+            try {
+              const fixed = history
+                .replace(/'/g, '"') // Replace single quotes with double
+                .replace(/([{,]\s*)([a-zA-Z0-9_]+?)\s*:/g, '$1"$2":'); // Quote unquoted keys
+              history = JSON.parse(fixed);
+            } catch (e2) {
+              console.debug('Could not parse history for person', p.id, 'Data:', history);
+              history = [];
+            }
+          }
+        } else if (typeof history === 'string' && history.trim() === '') {
+          history = [];
+        }
+
+        return {
+          ...p,
+          id: String(p.id),
+          parentId: p.parentId ? String(p.parentId) : null,
+          spouseId: p.spouseId ? String(p.spouseId) : null,
+          history: Array.isArray(history) ? history : []
+        };
+      });
+
     console.log('Filtered records:', filtered.length);
     return filtered;
   } catch (error) {
     console.error('Error fetching people:', error);
     console.error('Error details:', error instanceof Error ? error.message : String(error));
     console.log('Falling back to mock data');
-    return showInactive 
+    return showInactive
       ? mockPeople.filter(p => p.status === 'inactive')
       : mockPeople.filter(p => p.status !== 'inactive');
   }
@@ -67,8 +91,8 @@ export const fetchPeople = async (showInactive = false): Promise<Person[]> => {
 
 export const addPerson = async (person: Omit<Person, 'id'>): Promise<Person | null> => {
   if (USE_MOCK_DATA || !API_URL) {
-    console.warn(USE_MOCK_DATA 
-      ? 'Using mock data (VITE_USE_MOCK_DATA=true)' 
+    console.warn(USE_MOCK_DATA
+      ? 'Using mock data (VITE_USE_MOCK_DATA=true)'
       : 'No API URL provided, mocking add person.');
     const newPerson = { ...person, id: crypto.randomUUID(), status: 'active' as const };
     mockPeople.push(newPerson);
@@ -80,14 +104,14 @@ export const addPerson = async (person: Omit<Person, 'id'>): Promise<Person | nu
       method: 'POST',
       body: JSON.stringify(person),
     });
-    
+
     if (!response.ok) {
       throw new Error('Network response was not ok');
     }
-    
+
     const result = await response.json();
     if (result.status === 'success') {
-       return { ...person, id: 'temp-id' }; 
+      return { ...person, id: 'temp-id' };
     }
     return null;
   } catch (error) {
@@ -98,8 +122,8 @@ export const addPerson = async (person: Omit<Person, 'id'>): Promise<Person | nu
 
 export const updatePerson = async (person: Person): Promise<boolean> => {
   if (USE_MOCK_DATA || !API_URL) {
-    console.warn(USE_MOCK_DATA 
-      ? 'Using mock data (VITE_USE_MOCK_DATA=true)' 
+    console.warn(USE_MOCK_DATA
+      ? 'Using mock data (VITE_USE_MOCK_DATA=true)'
       : 'No API URL provided, mocking update person.');
     const index = mockPeople.findIndex(p => p.id === person.id);
     if (index !== -1) {
@@ -110,15 +134,20 @@ export const updatePerson = async (person: Person): Promise<boolean> => {
   }
 
   try {
+    // Use POST with action='update' to avoid PUT method (CORS issue on GAS)
+    // Use text/plain content type to avoid preflight OPTIONS request
     const response = await fetch(API_URL, {
-      method: 'PUT',
-      body: JSON.stringify(person),
+      method: 'POST',
+      headers: {
+        'Content-Type': 'text/plain;charset=utf-8',
+      },
+      body: JSON.stringify({ ...person, action: 'update' }),
     });
-    
+
     if (!response.ok) {
       throw new Error('Network response was not ok');
     }
-    
+
     const result = await response.json();
     return result.status === 'success';
   } catch (error) {
@@ -129,8 +158,8 @@ export const updatePerson = async (person: Person): Promise<boolean> => {
 
 export const togglePersonStatus = async (id: string): Promise<boolean> => {
   if (USE_MOCK_DATA || !API_URL) {
-    console.warn(USE_MOCK_DATA 
-      ? 'Using mock data (VITE_USE_MOCK_DATA=true)' 
+    console.warn(USE_MOCK_DATA
+      ? 'Using mock data (VITE_USE_MOCK_DATA=true)'
       : 'No API URL provided, mocking toggle status.');
     const person = mockPeople.find(p => p.id === id);
     if (person) {
@@ -141,15 +170,20 @@ export const togglePersonStatus = async (id: string): Promise<boolean> => {
   }
 
   try {
+    // Use POST with action='update' to avoid PUT method (CORS issue on GAS)
+    // Use text/plain content type to avoid preflight OPTIONS request
     const response = await fetch(API_URL, {
-      method: 'PUT',
-      body: JSON.stringify({ id, toggleStatus: true }),
+      method: 'POST',
+      headers: {
+        'Content-Type': 'text/plain;charset=utf-8',
+      },
+      body: JSON.stringify({ id, toggleStatus: true, action: 'update' }),
     });
-    
+
     if (!response.ok) {
       throw new Error('Network response was not ok');
     }
-    
+
     const result = await response.json();
     return result.status === 'success';
   } catch (error) {

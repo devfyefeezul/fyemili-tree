@@ -58,6 +58,15 @@ const buildTree = (people: Person[]): TreeNode[] => {
       if (!parent.children.some(c => c.id === person.id)) {
         parent.children.push(nodeMap[person.id]);
       }
+
+      // ALSO add to the parent's spouse's children (if spouse exists)
+      // This ensures children appear under the couple regardless of which parent is referenced
+      if (parent.spouseId && nodeMap[parent.spouseId]) {
+        const spouse = nodeMap[parent.spouseId];
+        if (!spouse.children.some(c => c.id === person.id)) {
+          spouse.children.push(nodeMap[person.id]);
+        }
+      }
     }
   });
 
@@ -65,7 +74,7 @@ const buildTree = (people: Person[]): TreeNode[] => {
   people.forEach(person => {
     // Check if parent exists in the current tree (nodeMap)
     const hasParentInTree = person.parentId && nodeMap[person.parentId];
-    
+
     if (!hasParentInTree) {
       const node = nodeMap[person.id];
       // Only add as root if not a spouse of someone who already has a parent IN THE TREE
@@ -108,9 +117,9 @@ const FamilyUnit = ({ node, onSelect }: FamilyUnitProps) => {
     const displayName = person.nickName ? `${person.nickName}` : person.fullName;
     const genderSymbol = person.gender === 'male' ? '♂' : person.gender === 'female' ? '♀' : '⚪';
     const genderColor = person.gender === 'male' ? 'text-blue-500' : person.gender === 'female' ? 'text-pink-500' : 'text-gray-400';
-    
+
     return (
-      <div 
+      <div
         className="bg-white p-3 rounded shadow border border-gray-200 w-40 text-center cursor-pointer hover:bg-gray-50 transition relative"
         onClick={() => onSelect(person)}
       >
@@ -132,7 +141,7 @@ const FamilyUnit = ({ node, onSelect }: FamilyUnitProps) => {
       {/* Parent(s) - horizontal layout for spouse pair */}
       <div className="flex items-center gap-0 relative z-10">
         <PersonCard person={node} />
-        
+
         {hasSpouse && node.spouse && (
           <>
             {/* Horizontal line between spouses with gender indicator */}
@@ -140,7 +149,7 @@ const FamilyUnit = ({ node, onSelect }: FamilyUnitProps) => {
               <div className="w-12 h-px bg-gray-400"></div>
               {/* Gender indicators on the connecting line */}
               {(sons > 0 || daughters > 0) && (
-                <div 
+                <div
                   className="absolute left-1/2 -translate-x-1/2 -top-6 bg-white px-1 text-xs text-gray-600 whitespace-nowrap"
                   title={`${sons} son${sons !== 1 ? 's' : ''}, ${daughters} daughter${daughters !== 1 ? 's' : ''}`}
                 >
@@ -157,7 +166,7 @@ const FamilyUnit = ({ node, onSelect }: FamilyUnitProps) => {
 
       {/* Expand/collapse button */}
       {hasChildren && (
-        <button 
+        <button
           className="mt-2 bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs shadow-sm hover:bg-blue-600 z-10"
           onClick={(e) => {
             e.stopPropagation();
@@ -172,9 +181,9 @@ const FamilyUnit = ({ node, onSelect }: FamilyUnitProps) => {
       {isOpen && hasChildren && (
         <div className="flex flex-col items-center w-full relative pt-8">
           {/* Vertical line down from couple center or single parent center */}
-          <div 
+          <div
             className="bg-gray-300 absolute"
-            style={{ 
+            style={{
               width: '2px',
               height: '40px', // Length to connect parents to children
               top: '-8px', // Start slightly up to connect with parents/button
@@ -182,7 +191,7 @@ const FamilyUnit = ({ node, onSelect }: FamilyUnitProps) => {
               marginLeft: hasSpouse ? `${parentCenterOffset - parentWidth / 2}px` : '0'
             }}
           ></div>
-          
+
           {/* Children container with proper centering */}
           <div className="flex flex-col items-center relative">
             {/* Children nodes */}
@@ -190,7 +199,7 @@ const FamilyUnit = ({ node, onSelect }: FamilyUnitProps) => {
               {node.children.map((child, index) => {
                 // Calculate offset for vertical line to point to biological child's card
                 const childVerticalOffset = child.spouse ? -(cardWidth + spouseGap) / 2 : 0;
-                
+
                 return (
                   <div key={child.id} className="flex flex-col items-center relative px-4 pt-8">
                     {/* Horizontal connectors - only between siblings, at container center */}
@@ -215,7 +224,7 @@ const FamilyUnit = ({ node, onSelect }: FamilyUnitProps) => {
                     )}
 
                     {/* Vertical line to child - offset to point to biological child */}
-                    <div 
+                    <div
                       className="bg-gray-300 absolute"
                       style={{
                         width: '2px',
@@ -226,7 +235,7 @@ const FamilyUnit = ({ node, onSelect }: FamilyUnitProps) => {
                         transform: 'translateX(-50%)'
                       }}
                     ></div>
-                    
+
                     <FamilyUnit node={child} onSelect={onSelect} />
                   </div>
                 );
@@ -246,7 +255,7 @@ export default function TreeView({ people, onUpdate, onToggleStatus, viewMode = 
     if (viewMode === 'family' && selectedFamilyId) {
       const result: Person[] = [];
       const selectedPerson = people.find(p => p.id === selectedFamilyId);
-      
+
       if (!selectedPerson) return people;
 
       // Add the selected person and spouse
@@ -259,7 +268,7 @@ export default function TreeView({ people, onUpdate, onToggleStatus, viewMode = 
       // Add descendants up to layerDepth
       const addDescendants = (parentId: string, currentDepth: number) => {
         if (currentDepth > layerDepth) return;
-        
+
         const children = people.filter(p => p.parentId === parentId);
         children.forEach(child => {
           if (!result.some(p => p.id === child.id)) {

@@ -10,8 +10,8 @@ export const mockPeople: Person[] = [
     "gender": "male",
     "birthDate": "1940-03-15",
     "bio": "Retired soldier",
-    "photoUrl": "https://via.placeholder.com/150",
-    "status": "active"
+    "photoUrl": "",
+    "status": "active",
   },
   {
     "id": '2',
@@ -22,7 +22,7 @@ export const mockPeople: Person[] = [
     "gender": "female",
     "birthDate": "1942-07-22",
     "bio": "Retired teacher",
-    "photoUrl": "https://via.placeholder.com/150",
+    "photoUrl": "",
     "status": "active"
   },
   {
@@ -34,7 +34,7 @@ export const mockPeople: Person[] = [
     "gender": "male",
     "birthDate": "1989-08-29",
     "bio": "Tester",
-    "photoUrl": "https://via.placeholder.com/150",
+    "photoUrl": "",
     "status": "active"
   },
   {
@@ -46,7 +46,7 @@ export const mockPeople: Person[] = [
     "gender": "male",
     "birthDate": "1993-10-23",
     "bio": "Programmer",
-    "photoUrl": "https://via.placeholder.com/150",
+    "photoUrl": "",
     "status": "active"
   },
   {
@@ -58,7 +58,7 @@ export const mockPeople: Person[] = [
     "gender": "male",
     "birthDate": "1997-04-18",
     "bio": "Technician",
-    "photoUrl": "https://via.placeholder.com/150",
+    "photoUrl": "",
     "status": "active"
   },
   {
@@ -70,7 +70,7 @@ export const mockPeople: Person[] = [
     "gender": "female",
     "birthDate": "1998-03-31",
     "bio": "Teacher",
-    "photoUrl": "https://via.placeholder.com/150",
+    "photoUrl": "",
     "status": "active"
   },
   {
@@ -82,7 +82,7 @@ export const mockPeople: Person[] = [
     "gender": "female",
     "birthDate": "2002-01-09",
     "bio": "Student",
-    "photoUrl": "https://via.placeholder.com/150",
+    "photoUrl": "",
     "status": "active"
   },
   {
@@ -94,7 +94,7 @@ export const mockPeople: Person[] = [
     "gender": "female",
     "birthDate": "1992-05-22",
     "bio": '',
-    "photoUrl": "https://via.placeholder.com/150",
+    "photoUrl": "",
     "status": "active"
   },
   {
@@ -106,7 +106,7 @@ export const mockPeople: Person[] = [
     "gender": "female",
     "birthDate": "1993-09-26",
     "bio": '',
-    "photoUrl": "https://via.placeholder.com/150",
+    "photoUrl": "",
     "status": "active"
   },
   {
@@ -118,7 +118,7 @@ export const mockPeople: Person[] = [
     "gender": "female",
     "birthDate": "1997-05-10",
     "bio": '',
-    "photoUrl": "https://via.placeholder.com/150",
+    "photoUrl": "",
     "status": "active"
   },
   {
@@ -130,7 +130,7 @@ export const mockPeople: Person[] = [
     "gender": "male",
     "birthDate": "1999-01-23",
     "bio": '',
-    "photoUrl": "https://via.placeholder.com/150",
+    "photoUrl": "",
     "status": "active"
   }
 ];
