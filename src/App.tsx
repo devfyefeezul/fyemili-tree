@@ -16,6 +16,7 @@ function App() {
   const [layerDepth, setLayerDepth] = useState<number>(2);
 
   useEffect(() => {
+    document.title = import.meta.env.VITE_APP_TITLE || 'Family Tree';
     loadPeople();
   }, [showInactive]);
 
@@ -50,7 +51,7 @@ function App() {
     <div className="min-h-screen bg-gray-100 text-gray-900 font-sans">
       <header className="bg-white shadow p-4 sticky top-0 z-10">
         <div className="max-w-4xl mx-auto flex justify-between items-center">
-          <h1 className="text-xl font-bold text-blue-600">Family Tree</h1>
+          <h1 className="text-xl font-bold text-blue-600">{import.meta.env.VITE_APP_TITLE || 'Family Tree'}</h1>
           <div className="flex gap-2">
             <button
               onClick={() => setView('list')}

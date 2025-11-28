@@ -43,9 +43,15 @@ export const fetchPeople = async (showInactive = false): Promise<Person[]> => {
     }
     
     // Show ONLY inactive if showInactive is true, otherwise show ONLY active
-    const filtered = showInactive 
+    const filtered = (showInactive 
       ? data.filter((p: Person) => p.status === 'inactive')
-      : data.filter((p: Person) => p.status !== 'inactive');
+      : data.filter((p: Person) => p.status !== 'inactive'))
+      .map((p: Person) => ({
+        ...p,
+        id: String(p.id),
+        parentId: p.parentId ? String(p.parentId) : null,
+        spouseId: p.spouseId ? String(p.spouseId) : null,
+      }));
     
     console.log('Filtered records:', filtered.length);
     return filtered;

@@ -12,14 +12,60 @@ interface MemberDetailModalProps {
   onToggleStatus: (id: string) => void;
 }
 
-// Utility function to format date as dd-MM-yyyy
+// Utility function to format date as dd/MM/yyyy for display
 const formatDate = (dateStr?: string): string => {
   if (!dateStr) return '';
-  const date = new Date(dateStr);
+  
+  // Try to parse the date
+  let date = new Date(dateStr);
+  
+  // Handle DD-MM-YYYY format manually if standard parsing fails or gives invalid date
+  if (isNaN(date.getTime()) && /^\d{2}-\d{2}-\d{4}$/.test(dateStr)) {
+    const [day, month, year] = dateStr.split('-').map(Number);
+    date = new Date(year, month - 1, day);
+  }
+  
+  if (isNaN(date.getTime())) return dateStr;
+  
   const day = String(date.getDate()).padStart(2, '0');
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const year = date.getFullYear();
-  return `${day}-${month}-${year}`;
+  return `${day}/${month}/${year}`;
+};
+
+// Utility to convert various date formats to YYYY-MM-DD for input[type="date"]
+const toInputDate = (dateStr?: string): string => {
+  if (!dateStr) return '';
+  
+  // If already in YYYY-MM-DD format
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
+  
+  let date = new Date(dateStr);
+  
+  // Handle DD-MM-YYYY format (common in some regions/spreadsheets)
+  if (isNaN(date.getTime()) || dateStr.match(/^\d{2}-\d{2}-\d{4}$/)) {
+    const parts = dateStr.split(/[-/]/);
+    if (parts.length === 3) {
+      // Assume DD-MM-YYYY if first part is > 12 or based on context, but safely:
+      // If we have 3 parts, try to construct date. 
+      // Note: Date input needs YYYY-MM-DD
+      const d = parseInt(parts[0]);
+      const m = parseInt(parts[1]);
+      const y = parseInt(parts[2]);
+      
+      // Check if it looks like DD-MM-YYYY (Year at end)
+      if (y > 1000) {
+         date = new Date(y, m - 1, d);
+      }
+    }
+  }
+
+  if (isNaN(date.getTime())) return '';
+  
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 };
 
 export default function MemberDetailModal({ person, people, onClose, onUpdate, onToggleStatus }: MemberDetailModalProps) {
@@ -226,7 +272,7 @@ export default function MemberDetailModal({ person, people, onClose, onUpdate, o
               />
 
               <SearchableSelect
-                people={people.filter(p => p.id !== person.id && p.id !== person.spouseId)}
+                people={people.filter(p => p.id !== person.id)}
                 value={editedPerson.spouseId || ''}
                 onChange={(value) => setEditedPerson({ ...editedPerson, spouseId: value || null })}
                 label="Spouse/Partner"
@@ -239,7 +285,7 @@ export default function MemberDetailModal({ person, people, onClose, onUpdate, o
                 <input
                   type="date"
                   className="w-full p-2 border rounded"
-                  value={editedPerson.birthDate || ''}
+                  value={toInputDate(editedPerson.birthDate)}
                   onChange={(e) => setEditedPerson({ ...editedPerson, birthDate: e.target.value })}
                 />
               </div>

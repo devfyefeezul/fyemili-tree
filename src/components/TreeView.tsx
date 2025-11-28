@@ -141,7 +141,7 @@ const FamilyUnit = ({ node, onSelect }: FamilyUnitProps) => {
               {/* Gender indicators on the connecting line */}
               {(sons > 0 || daughters > 0) && (
                 <div 
-                  className="absolute left-1/2 -translate-x-1/2 -top-3 bg-white px-1 text-xs text-gray-600 whitespace-nowrap"
+                  className="absolute left-1/2 -translate-x-1/2 -top-6 bg-white px-1 text-xs text-gray-600 whitespace-nowrap"
                   title={`${sons} son${sons !== 1 ? 's' : ''}, ${daughters} daughter${daughters !== 1 ? 's' : ''}`}
                 >
                   {sons > 0 && <span className="text-blue-500">♂{sons}</span>}
@@ -199,6 +199,19 @@ const FamilyUnit = ({ node, onSelect }: FamilyUnitProps) => {
                     )}
                     {index < node.children.length - 1 && (
                       <div className="absolute top-0 right-0 w-1/2 h-0.5 bg-gray-300"></div>
+                    )}
+
+                    {/* Bridge line if vertical line is offset */}
+                    {childVerticalOffset !== 0 && (
+                      <div
+                        className="bg-gray-300 absolute h-0.5"
+                        style={{
+                          top: 0,
+                          left: '50%',
+                          width: `${Math.abs(childVerticalOffset)}px`,
+                          transform: childVerticalOffset > 0 ? 'none' : 'translateX(-100%)'
+                        }}
+                      ></div>
                     )}
 
                     {/* Vertical line to child - offset to point to biological child */}
